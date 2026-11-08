@@ -19,6 +19,9 @@ const songNotes=t=>t.notes?.length?t.notes:(t.note||t.printed_note||t.notes||'')
 function render(){
   if(!db)return;
   const q=norm($('query').value),role=$('role').value,status=$('status').value;
+  const exactIdentity=(db.identity_index||[]).find(e=>e.verified?.exact_credit_matching&&[e.name,...(e.variants||[])].some(n=>norm(n)===q));
+  const exactNames=exactIdentity?new Set([exactIdentity.name,...exactIdentity.variants].map(norm)):null;
+  const identityCredit=c=>exactNames.has(norm(c.name_printed||''));
   const songs=[],albums=[];
   for(const a of db.albums){
     if(status&&status!==a.review_status)continue;
@@ -28,14 +31,18 @@ function render(){
       const credits=role?t.credits.filter(c=>inGroup(c.role,role)):t.credits;
       if(role&&!credits.length)continue;
       // With a role chosen, the name has to be on a credit in that role.
-      const hit=role
+      const hit=exactNames
+        ?(credits.some(identityCredit)||(!role&&exactNames.has(norm(a.artist_printed||''))))
+        :role
         ?credits.some(c=>match(norm(nameText(c)),q))
         :match(norm([ah,t.title_en,t.title_he,t.title_printed,t.title,t.text_source,t.composition_attribution_printed,...credits.map(c=>nameText(c)+' '+(c.segment||''))].filter(Boolean).join(' ')),q);
       if(hit)songs.push({a,t,credits});
     }
     const ac=a.album_credits||[];
     if(q&&ac.length){
-      const hit=role
+      const hit=exactNames
+        ?ac.some(c=>(!role||inGroup(c.role,role))&&identityCredit(c))
+        :role
         ?ac.some(c=>inGroup(c.role,role)&&match(norm(nameText(c)),q))
         :match(norm(ah+' '+ac.map(c=>(c.name_printed||'')+' '+(c.role_printed||'')).join(' ')),q);
       if(hit)albums.push({a});
