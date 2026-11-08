@@ -1,6 +1,6 @@
 // Shared site code: page styles are in shared.css; this file holds the one database URL,
 // the shared header/menu markup, and shared helpers. Each page keeps only its own code.
-const DB_URL='2-33-database-v11444.json';
+const DB_URL='1-database-v11466.json';
 const $=id=>document.getElementById(id);
 const norm=s=>String(s||'').normalize('NFKD').replace(/[\u0591-\u05c7]/g,'').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -29,8 +29,8 @@ function stripFolder(a,t){
 function albumTitle(a){return stripFolder(a,a.title)||a.title_he||''}
 
 // Link to the source PDF on Drive. A record built from part of another PDF lists its pages.
-function bookletLink(a,page){
-  const s=a.sources[0];
+function bookletLink(a,page,sourceId){
+  const s=a.sources.find(s=>s.id===sourceId)||a.sources[0];
   const u=new URL(s.url);u.searchParams.delete('authuser');
   const where=page?' · PDF page '+page:(s.pages&&s.pages.length?' · PDF pages '+s.pages.join(', '):'');
   return `<a href="${esc(u.href)}" target="_blank" rel="noopener">Open original booklet${esc(where)}</a>`;
