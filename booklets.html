@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>All booklets · Jewish Music Booklet Archive</title><link rel="stylesheet" href="shared.css"><div id="site-header"></div><main><script src="shared.js"></script><h2>All booklets</h2><label for="query">Filter the source inventory</label><div class="controls two"><input id="query" type="search" placeholder="Search the archive" autocomplete="off"><select id="status" aria-label="Review status"><option value="">All review statuses</option><option value="reviewed">Reviewed</option><option value="pending">Awaiting review</option></select></div><p id="resultCount" aria-live="polite"></p><div id="results" class="grid"></div><button id="more" hidden>Show more</button><p id="error" role="alert"></p></main><script>
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>All booklets · Jewish Music Booklet Archive</title><link rel="stylesheet" href="shared.css"><div id="site-header"></div><main><script src="shared.js"></script><h2>All booklets</h2><label for="query">Filter the source inventory</label><div class="controls two"><input id="query" type="search" placeholder="Search the archive" autocomplete="off"><select id="status" aria-label="Review status"><option value="">All review statuses</option><option value="reviewed">Reviewed</option><option value="pending">Awaiting review</option><option value="reviewed_non_album">Reviewed lyrics collection</option></select></div><p id="resultCount" aria-live="polite"></p><div id="results" class="grid"></div><button id="more" hidden>Show more</button><p id="error" role="alert"></p></main><script>
 let db,limit=40;
 const match=(h,q)=>q.split(' ').every(t=>h.includes(t));
 function render(){
@@ -12,7 +12,7 @@ function render(){
     +`<h2 class="bidi">${esc(albumTitle(a))}</h2>`
     +(a.edition_label?`<p>${esc(a.edition_label)}</p>`:'')
     +(a.title_he&&a.title_he!==albumTitle(a)?`<p class="bidi">${esc(a.title_he)}</p>`:'')
-    +`<p class="muted">${a.review_status==='reviewed'?a.tracks.length+' reviewed track'+(a.tracks.length===1?'':'s'):'Awaiting review'}</p>`
+    +`<p class="muted">${a.review_status==='reviewed'?a.tracks.length+' reviewed track'+(a.tracks.length===1?'':'s'):a.review_status==='reviewed_non_album'?'Reviewed lyrics collection':'Awaiting review'}</p>`
     +`<p>${bookletLink(a)}</p>`
     +((a.album_credits||[]).length?`<details><summary>Album-wide credits (composer scope shown in song results)</summary>${a.album_credits.map(c=>`<div class="credit"><span>${esc(c.role)}</span><span class="bidi">${esc(c.name_printed)}${c.role_printed?`<small class="bidi"> · ${esc(c.role_printed)}</small>`:''}</span></div>`).join('')}</details>`:'')
     +`</article>`).join('');

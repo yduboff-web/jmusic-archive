@@ -2,7 +2,9 @@
 // Counted from the albums themselves; the summary fields at the top of the database file can go stale.
 loadDB().then(d=>{
   const files=new Set(d.albums.flatMap(a=>a.sources.map(s=>s.id||s.filename)));
-  const reviewed=d.albums.filter(a=>a.review_status==='reviewed');
-  $('stats').innerHTML=`<span><strong>${files.size}</strong> source PDFs</span><span><strong>${d.albums.length}</strong> albums</span><span><strong>${reviewed.length}</strong> reviewed albums</span><span><strong>${reviewed.reduce((n,a)=>n+a.tracks.length,0)}</strong> reviewed tracks</span>`;
+  const albums=d.albums.filter(a=>a.document_type!=='lyrics_compilation_not_album_booklet');
+  const reviewed=albums.filter(a=>a.review_status==='reviewed');
+  const collections=d.albums.filter(a=>a.review_status==='reviewed_non_album').length;
+  $('stats').innerHTML=`<span><strong>${files.size}</strong> source PDFs</span><span><strong>${albums.length}</strong> albums</span><span><strong>${reviewed.length}</strong> reviewed albums</span><span><strong>${reviewed.reduce((n,a)=>n+a.tracks.length,0)}</strong> reviewed tracks</span>${collections?`<span><strong>${collections}</strong> reviewed lyrics collection${collections===1?'':'s'}</span>`:''}`;
 }).catch(()=>{$('error').textContent='Progress could not be loaded.'});
 </script></html>
