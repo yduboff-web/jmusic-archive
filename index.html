@@ -67,7 +67,7 @@ function songCard({a,t,credits}){
     +`<h2 class="bidi">${num}${esc(songTitle(t))}</h2>`
     +(t.title_en&&t.title_he?`<p class="bidi">${esc(t.title_he)}</p>`:'')
     +(credits.length?credits.map(credit).join(''):'<p class="muted">No confirmed per-song person credits entered. See the booklet and album-wide credits.</p>')
-    +`<p>${bookletLink(a,songPage(t))}</p>`
+    +`<p>${bookletLink(a,songPage(t),t.source?.drive_file_id)}</p>`
     +(t.text_source?`<p class="muted bidi">Text source: ${esc(t.text_source)}</p>`:'')
     +(t.composition_attribution_printed?`<p class="muted bidi">Composition attribution: ${esc(t.composition_attribution_printed)}</p>`:'')
     +(songNotes(t)?`<p class="muted">${esc(typeof songNotes(t)==='string'?songNotes(t):songNotes(t).join(' '))}</p>`:'')
