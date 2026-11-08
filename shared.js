@@ -8,7 +8,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const ph=document.getElementById('site-header');
 if(ph)ph.outerHTML="<header><p class=\"muted\">ארכיון המוזיקה היהודית</p><h1>Jewish Music Booklet Archive</h1><p>One database. Albums, songs and the people behind them.</p></header>";
 const main=document.querySelector('main');
-if(main){const t=document.createElement('template');t.innerHTML="<nav aria-label=\"Archive pages\"><details class=\"page-menu\"><summary>Pages</summary><a href=\"rebuild.html\">Search</a><a href=\"booklets.html\">All booklets</a><a href=\"people.html\">Index</a><a href=\"about.html\">About the archive</a></details></nav>";main.prepend(t.content.firstChild)}
+if(main){const t=document.createElement('template');t.innerHTML="<nav aria-label=\"Archive pages\"><details class=\"page-menu\"><summary>Pages</summary><a href=\"index.html\">Search</a><a href=\"booklets.html\">All booklets</a><a href=\"people.html\">Index</a><a href=\"about.html\">About the archive</a></details></nav>";main.prepend(t.content.firstChild)}
 })();
 let _db,_loading;
 async function loadDB(){
