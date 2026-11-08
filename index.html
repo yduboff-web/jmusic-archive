@@ -12,8 +12,8 @@ function match(h,q){
 }
 const nameText=c=>[c.name_printed,c.name_resolved,...(c.name_search_aliases||[])].filter(Boolean).join(' ');
 // Accept the alternate source-faithful fields used by reviewed booklet imports.
-const songTitle=t=>t.title_en||t.title_he||t.title_printed||t.title||'';
-const songPage=t=>t.source_page??t.source?.page;
+const songTitle=t=>t.title_en||t.title_he||'';
+const songPage=t=>t.source_page;
 const songNotes=t=>t.notes?.length?t.notes:(t.note||t.printed_note||t.notes||'');
 
 function render(){
