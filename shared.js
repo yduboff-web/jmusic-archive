@@ -1,6 +1,6 @@
 // Shared site code: page styles are in shared.css; this file holds the one database URL,
 // the shared header/menu markup, and shared helpers. Each page keeps only its own code.
-const DB_URL='1-1-database-v9358.json';
+const DB_URL='2-1-database-v9519.json';
 const $=id=>document.getElementById(id);
 const norm=s=>String(s||'').normalize('NFKD').replace(/[\u0591-\u05c7]/g,'').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
