@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jewish Music Booklet Archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=David+Libre:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* ── TOKENS ── */
+  :root {
+    --bg: #0d0d14;
+    --surface: #16161f;
+    --surface2: #1e1e2a;
+    --border: #2a2a3a;
+    --gold: #c9a84c;
+    --gold-dim: #8a6f2e;
+    --cream: #f0e8d5;
+    --muted: #8888aa;
+    --tag-bg: #1e2235;
+    --tag-border: #3a3a60;
+    --highlight: #c9a84c33;
+    --radius: 10px;
+    --font-en: 'Georgia', 'Iowan Old Style', serif;
+    --font-he: 'Frank Ruhl Libre', 'David Libre', 'Times New Roman', 'Noto Serif Hebrew', serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* Any element holding raw data (names, titles, song/topic text) gets
+     plaintext bidi so mixed Hebrew/English fragments order themselves
+     correctly no matter which language mode the page is in. */
+  .bidi {
+    unicode-bidi: plaintext;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: var(--font-en), var(--font-he);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #0a0a10 0%, #16161f 50%, #0d0d14 100%);
+    border-bottom: 1px solid var(--gold-dim);
+    padding: 28px 24px 20px;
+    text-align: center;
+    position: relative;
+  }
+  .header-title-en {
+    font-size: 2rem;
+    font-weight: normal;
+    color: var(--gold);
+    letter-spacing: 0.04em;
+  }
+  .header-title-he {
+    font-size: 1.8rem;
+    font-weight: normal;
+    color: var(--gold);
+    direction: rtl;
+    unicode-bidi: plaintext;
+    font-family: var(--font-he);
+    display: none;
+  }
+  .header-sub {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 0.06em;
+  }
+  #album-count {
+    font-size: 0.8rem;
+    color: var(--gold-dim);
+    margin-top: 4px;
+  }
+
+  /* ── LANG TOGGLE ── */
+  .lang-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 6px;
+  }
+  .lang-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 5px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+  }
+  .lang-btn.active {
+    background: var(--gold);
+    color: var(--bg);
+    border-color: var(--gold);
+    font-weight: bold;
+  }
+
+  /* ── SEARCH BAR ── */
+  .search-wrapper {
+    max-width: 700px;
+    margin: 28px auto 0;
+    padding: 0 20px;
+  }
+  .search-box {
+    position: relative;
+  }
+  .search-box input {
+    width: 100%;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 50px 14px 18px;
+    font-size: 1rem;
+    color: var(--cream);
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: var(--font-en);
+  }
+  .search-box input::placeholder { color: var(--muted); }
+  .search-box input:focus { border-color: var(--gold); }
+  .search-icon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 1.1rem;
+    pointer-events: none;
+  }
+
+  /* ── FILTER CHIPS ── */
+  .filters {
+    max-width: 700px;
+    margin: 14px auto 0;
+    padding: 0 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .filter-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-right: 4px;
+  }
+  .chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .chip:hover { border-color: var(--gold-dim); color: var(--cream); }
+  .chip.active {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+    color: var(--cream);
+  }
+
+  /* ── TOPIC FILTER ── */
+  .topic-filter {
+    max-width: 700px;
+    margin: 10px auto 0;
+    padding: 0 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+  .topic-chip {
+    background: var(--tag-bg);
+    border: 1px solid var(--tag-border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.72rem;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .topic-chip:hover { border-color: var(--gold-dim); color: var(--cream); }
+  .topic-chip.active {
+    background: #2a2010;
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* ── RESULTS INFO ── */
+  .results-info {
+    max-width: 700px;
+    margin: 18px auto 0;
+    padding: 0 20px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    min-height: 1.2em;
+    unicode-bidi: plaintext;
+  }
+
+  /* ── RESULT CARDS ── */
+  .results {
+    max-width: 700px;
+    margin: 12px auto 40px;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    transition: border-color 0.2s;
+    cursor: default;
+  }
+  .card:hover { border-color: var(--gold-dim); }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .card-title {
+    font-size: 1.05rem;
+    color: var(--cream);
+    line-height: 1.3;
+    unicode-bidi: plaintext;
+  }
+  .card-title-he {
+    font-size: 1rem;
+    color: var(--cream);
+    direction: rtl;
+    unicode-bidi: plaintext;
+    font-family: var(--font-he);
+    line-height: 1.4;
+    display: none;
+  }
+  .card-year {
+    font-size: 0.78rem;
+    color: var(--gold-dim);
+    white-space: nowrap;
+    padding-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .card-row {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-top: 5px;
+    line-height: 1.5;
+  }
+  .card-row span {
+    color: var(--cream);
+    opacity: 0.85;
+    unicode-bidi: plaintext;
+  }
+
+  .songs-list {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .song-tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px 9px;
+    font-size: 0.75rem;
+    color: var(--muted);
+    unicode-bidi: plaintext;
+  }
+  .song-tag.match {
+    background: var(--highlight);
+    border-color: var(--gold-dim);
+    color: var(--gold);
+  }
+
+  .topic-tags {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .topic-tag {
+    background: var(--tag-bg);
+    border: 1px solid var(--tag-border);
+    border-radius: 20px;
+    padding: 2px 9px;
+    font-size: 0.7rem;
+    color: #8888c2;
+    unicode-bidi: plaintext;
+  }
+
+  .full-text-match {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border-left: 3px solid var(--gold-dim);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.6;
+    font-style: italic;
+    unicode-bidi: plaintext;
+  }
+  .full-text-match em {
+    background: var(--highlight);
+    color: var(--gold);
+    font-style: normal;
+    border-radius: 3px;
+    padding: 0 2px;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  /* ── LOADING ── */
+  .loading {
+    text-align: center;
+    padding: 80px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── RTL MODE ── */
+  body.rtl {
+    direction: rtl;
+    font-family: var(--font-he), var(--font-en);
+  }
+  body.rtl .card-title { display: none; }
+  body.rtl .card-title-he { display: block; }
+  body.rtl .header-title-en { display: none; }
+  body.rtl .header-title-he { display: block; }
+  body.rtl .full-text-match { border-left: none; border-right: 3px solid var(--gold-dim); }
+  body.rtl .search-box input { padding: 14px 18px 14px 50px; }
+  body.rtl .search-icon { right: auto; left: 16px; }
+  body.rtl .filter-label { margin-right: 0; margin-left: 4px; }
+  body.rtl .card-row b,
+  body.rtl .card-row span,
+  body.rtl .card-title,
+  body.rtl .card-title-he,
+  body.rtl .song-tag,
+  body.rtl .topic-tag {
+    unicode-bidi: plaintext;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="lang-toggle">
+    <button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" data-lang="he" onclick="setLang('he')">עב</button>
+  </div>
+  <div class="header-title-en">🎵 Jewish Music Booklet Archive</div>
+  <div class="header-title-he">ארכיון עטיפות המוזיקה היהודית 🎵</div>
+  <div class="header-sub" id="header-sub"
+       data-en="Search 500+ album booklets · songs · credits · pesukim · topics"
+       data-he="חיפוש בלמעלה מ-500 עטיפות אלבום · שירים · קרדיטים · פסוקים · נושאים">Search 500+ album booklets · songs · credits · pesukim · topics</div>
+  <div id="album-count"></div>
+</header>
+
+<div class="search-wrapper">
+  <div class="search-box">
+    <input type="text" id="search-input"
+      placeholder="Search by artist, song, composer, pasuk, topic..."
+      oninput="onSearch()" autocomplete="off" spellcheck="false">
+    <span class="search-icon">🔍</span>
+  </div>
+</div>
+
+<div class="filters">
+  <span class="filter-label" data-en="Search in:" data-he="חיפוש לפי:">Search in:</span>
+  <span class="chip active" data-field="all"      data-en="All"        data-he="הכל"     onclick="toggleField(this)">All</span>
+  <span class="chip"        data-field="artist"   data-en="Artist"     data-he="אמן"      onclick="toggleField(this)">Artist</span>
+  <span class="chip"        data-field="song"     data-en="Song"       data-he="שיר"      onclick="toggleField(this)">Song</span>
+  <span class="chip"        data-field="composer" data-en="Composer"   data-he="מלחין"    onclick="toggleField(this)">Composer</span>
+  <span class="chip"        data-field="arranger" data-en="Arranger"   data-he="מעבד"     onclick="toggleField(this)">Arranger</span>
+  <span class="chip"        data-field="vocalist" data-en="Vocalist"   data-he="זמר"      onclick="toggleField(this)">Vocalist</span>
+  <span class="chip"        data-field="producer" data-en="Producer"   data-he="מפיק"     onclick="toggleField(this)">Producer</span>
+  <span class="chip"        data-field="pasuk"    data-en="Pasuk"      data-he="פסוק"     onclick="toggleField(this)">Pasuk</span>
+  <span class="chip"        data-field="topic"    data-en="Topic"      data-he="נושא"     onclick="toggleField(this)">Topic</span>
+  <span class="chip"        data-field="fulltext" data-en="Full Text"  data-he="טקסט מלא" onclick="toggleField(this)">Full Text</span>
+</div>
+
+<div class="topic-filter" id="topic-filter"></div>
+
+<div class="results-info" id="results-info"></div>
+<div class="results" id="results">
+  <div class="loading">Loading archive...</div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────────
+let DATA = [];
+let lang = 'en';
+let activeField = 'all';
+let activeTopic = null;
+
+// Known watermark junk that leaked into the "songs" list during PDF text
+// extraction ("j.music booklet archive" and its garbled Hebrew mirror).
+// These aren't real song titles, so we filter them out before rendering.
+function isRealSong(s) {
+  if (!s) return false;
+  const trimmed = s.trim();
+  if (trimmed.length < 2 || trimmed.length >= 80) return false;
+  if (/[\x00-\x1f]/.test(trimmed)) return false;
+  if (trimmed === 'ןויכרא תופיטעה ימלועה') return false;
+  if (trimmed.toLowerCase() === 'j.music booklet archive') return false;
+  return true;
+}
+
+// ── LOAD DATA ──────────────────────────────────────────────────────────────
+function updateAlbumCount() {
+  const el = document.getElementById('album-count');
+  if (!el || !DATA.length) return;
+  el.textContent = lang === 'he'
+    ? `${DATA.length} אלבומים בארכיון`
+    : `${DATA.length} albums indexed`;
+}
+
+async function loadData() {
+  try {
+    const r = await fetch('data.json');
+    if (!r.ok) throw new Error('data.json not found');
+    const json = await r.json();
+    DATA = json.albums || [];
+    updateAlbumCount();
+    buildTopicFilter();
+    render('');
+  } catch(e) {
+    document.getElementById('results').innerHTML =
+      `<div class="empty">⚠️ Could not load data.json.<br>
+       Make sure data.json is in the same folder as this HTML file.<br>
+       <small style="color:#666">${e.message}</small></div>`;
+  }
+}
+
+// ── TOPIC FILTER ───────────────────────────────────────────────────────────
+function buildTopicFilter() {
+  const allTopics = new Set();
+  DATA.forEach(a => (a.topics||[]).forEach(t => allTopics.add(t)));
+  const container = document.getElementById('topic-filter');
+  allTopics.forEach(topic => {
+    const el = document.createElement('span');
+    el.className = 'topic-chip';
+    el.textContent = topic;
+    el.onclick = () => {
+      activeTopic = activeTopic === topic ? null : topic;
+      document.querySelectorAll('.topic-chip').forEach(c => c.classList.remove('active'));
+      if (activeTopic) el.classList.add('active');
+      onSearch();
+    };
+    container.appendChild(el);
+  });
+}
+
+// Labels used inside result cards, translated per active language.
+const LABELS = {
+  composed: { en: 'Composed:', he: 'לחן:' },
+  arranged: { en: 'Arranged:', he: 'עיבוד:' },
+  feat:     { en: 'Feat.:',    he: 'בהשתתפות:' },
+  produced: { en: 'Produced:', he: 'הופק:' },
+  pesukim:  { en: 'Pesukim:',  he: 'פסוקים:' }
+};
+
+// ── SEARCH ────────────────────────────────────────────────────────────────
+function onSearch() {
+  render(document.getElementById('search-input').value.trim());
+}
+
+function toggleField(el) {
+  document.querySelectorAll('.chip[data-field]').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeField = el.dataset.field;
+  onSearch();
+}
+
+function setLang(l) {
+  lang = l;
+  document.body.classList.toggle('rtl', l === 'he');
+  document.querySelectorAll('.lang-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.lang === l));
+
+  // Swap any UI chrome text that has bilingual data attributes.
+  document.querySelectorAll('[data-en][data-he]').forEach(el => {
+    el.textContent = l === 'he' ? el.dataset.he : el.dataset.en;
+  });
+  updateAlbumCount();
+
+  const ph = l === 'he'
+    ? 'חיפוש לפי אמן, שיר, מלחין, פסוק, נושא...'
+    : 'Search by artist, song, composer, pasuk, topic...';
+  document.getElementById('search-input').placeholder = ph;
+  onSearch();
+}
+
+function matches(album, query, field) {
+  if (!query) return { match: true, snippets: [] };
+  const q = query.toLowerCase();
+  const snippets = [];
+  let hit = false;
+
+  function check(text, label) {
+    if (!text) return;
+    const tl = text.toLowerCase();
+    if (tl.includes(q)) {
+      hit = true;
+      if (label === 'fulltext') {
+        const idx = tl.indexOf(q);
+        const start = Math.max(0, idx - 60);
+        const end   = Math.min(text.length, idx + q.length + 60);
+        snippets.push(text.substring(start, end));
+      }
+    }
+  }
+
+  const f = field;
+  if (f === 'all' || f === 'artist') {
+    check(album.artist_en, 'artist');
+    check(album.artist_he, 'artist');
+  }
+  if (f === 'all' || f === 'song') {
+    (album.songs||[]).filter(isRealSong).forEach(s => check(s, 'song'));
+  }
+  if (f === 'all' || f === 'composer') {
+    (album.credits?.composer||[]).forEach(c => check(c, 'composer'));
+  }
+  if (f === 'all' || f === 'arranger') {
+    (album.credits?.arranger||[]).forEach(c => check(c, 'arranger'));
+  }
+  if (f === 'all' || f === 'vocalist') {
+    (album.credits?.vocalist||[]).forEach(c => check(c, 'vocalist'));
+  }
+  if (f === 'all' || f === 'producer') {
+    (album.credits?.producer||[]).forEach(c => check(c, 'producer'));
+  }
+  if (f === 'all' || f === 'pasuk') {
+    (album.pesukim||[]).forEach(p => check(p, 'pasuk'));
+  }
+  if (f === 'all' || f === 'topic') {
+    (album.topics||[]).forEach(t => check(t, 'topic'));
+  }
+  if (f === 'all' || f === 'fulltext') {
+    if (!album.encoding_issue) {
+      check(album.full_text, 'fulltext');
+    }
+  }
+
+  return { match: hit, snippets };
+}
+
+function highlight(text, query) {
+  if (!query) return text;
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp(`(${escaped})`, 'gi'),
+    '<em>$1</em>');
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────
+function render(query) {
+  const container = document.getElementById('results');
+  const infoEl    = document.getElementById('results-info');
+
+  if (!DATA.length) return;
+
+  let filtered = DATA;
+
+  // Topic filter
+  if (activeTopic) {
+    filtered = filtered.filter(a => (a.topics||[]).includes(activeTopic));
+  }
+
+  // Text search
+  let results = [];
+  if (!query) {
+    results = filtered.map(a => ({ album: a, snippets: [] }));
+  } else {
+    filtered.forEach(a => {
+      const { match, snippets } = matches(a, query, activeField);
+      if (match) results.push({ album: a, snippets });
+    });
+  }
+
+  // Sort: year desc, then alpha
+  results.sort((a, b) => {
+    const ya = parseInt(a.album.year)||0, yb = parseInt(b.album.year)||0;
+    return yb - ya || (a.album.artist_en||'').localeCompare(b.album.artist_en||'');
+  });
+
+  // Info line
+  if (query || activeTopic) {
+    if (lang === 'he') {
+      infoEl.textContent = `${results.length} תוצאות` +
+        (activeTopic ? ` בנושא "${activeTopic}"` : '') +
+        (query ? ` עבור "${query}"` : '');
+    } else {
+      infoEl.textContent = `${results.length} result${results.length!==1?'s':''}` +
+        (activeTopic ? ` in "${activeTopic}"` : '') +
+        (query ? ` for "${query}"` : '');
+    }
+  } else {
+    infoEl.textContent = lang === 'he'
+      ? `מציג את כל ${results.length} האלבומים`
+      : `Showing all ${results.length} albums`;
+  }
+
+  if (!results.length) {
+    container.innerHTML = lang === 'he'
+      ? `<div class="empty">לא נמצאו תוצאות.<br>
+         <small>נסה ניקוד אחר או עבור לחיפוש בטקסט המלא.</small></div>`
+      : `<div class="empty">No results found.<br>
+         <small>Try a different spelling or switch to Full Text search.</small></div>`;
+    return;
+  }
+
+  const html = results.map(({ album: a, snippets }) => {
+    const title    = lang === 'he' ? a.artist_he : a.artist_en;
+    const titleHe  = a.artist_he;
+    const titleEn  = a.artist_en;
+
+    // Songs
+    const songTags = (a.songs||[])
+      .filter(isRealSong)
+      .map(s => {
+        const isMatch = query && s.toLowerCase().includes(query.toLowerCase());
+        return `<span class="song-tag${isMatch?' match':''}">${esc(s)}</span>`;
+      }).join('');
+
+    // Credits summary
+    const credLines = [];
+    if (a.credits?.composer?.length)  credLines.push(`<b style="color:#888">${LABELS.composed[lang]}</b> <span>${esc(a.credits.composer.slice(0,3).join(', '))}</span>`);
+    if (a.credits?.arranger?.length)  credLines.push(`<b style="color:#888">${LABELS.arranged[lang]}</b> <span>${esc(a.credits.arranger.slice(0,3).join(', '))}</span>`);
+    if (a.credits?.vocalist?.length)  credLines.push(`<b style="color:#888">${LABELS.feat[lang]}</b> <span>${esc(a.credits.vocalist.slice(0,3).join(', '))}</span>`);
+    if (a.credits?.producer?.length)  credLines.push(`<b style="color:#888">${LABELS.produced[lang]}</b> <span>${esc(a.credits.producer.slice(0,2).join(', '))}</span>`);
+
+    // Pesukim
+    const pasukLine = a.pesukim?.length
+      ? `<div class="card-row"><b style="color:#888">${LABELS.pesukim[lang]}</b> <span>${esc(a.pesukim.join(' · '))}</span></div>` : '';
+
+    // Topics
+    const topicTags = (a.topics||[]).map(t =>
+      `<span class="topic-tag">${esc(t)}</span>`).join('');
+
+    // Full text snippets
+    const snippetHtml = snippets.slice(0,2).map(s =>
+      `<div class="full-text-match">...${highlight(esc(s), query)}...</div>`
+    ).join('');
+
+    return `<div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">${highlight(esc(titleEn), query)}</div>
+          <div class="card-title-he">${highlight(esc(titleHe), query)}</div>
+        </div>
+        ${a.year ? `<div class="card-year">${a.year}</div>` : ''}
+      </div>
+      ${a.encoding_issue ? `<div class="card-row" style="color:#c97c4c">⚠ ${lang === 'he' ? 'קובץ ה-PDF המקורי סובל מתקלת קידוד גופן — טקסט עברי עלול להיות מוצג באופן שגוי' : 'Source PDF has a font encoding issue — Hebrew text may not display correctly'}</div>` : ''}
+      ${credLines.map(l => `<div class="card-row">${l}</div>`).join('')}
+      ${pasukLine}
+      ${songTags ? `<div class="songs-list">${songTags}</div>` : ''}
+      ${topicTags ? `<div class="topic-tags">${topicTags}</div>` : ''}
+      ${snippetHtml}
+    </div>`;
+  }).join('');
+
+  container.innerHTML = html;
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
