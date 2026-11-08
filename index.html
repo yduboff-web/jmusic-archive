@@ -11,6 +11,10 @@ function match(h,q){
   return matchVariants.some(ts=>ts.every(t=>h.includes(t)));
 }
 const nameText=c=>[c.name_printed,c.name_resolved,...(c.name_search_aliases||[])].filter(Boolean).join(' ');
+// Accept the alternate source-faithful fields used by reviewed booklet imports.
+const songTitle=t=>t.title_en||t.title_he||t.title_printed||t.title||'';
+const songPage=t=>t.source_page??t.source?.page;
+const songNotes=t=>t.notes?.length?t.notes:(t.note||t.printed_note||t.notes||'');
 
 function render(){
   if(!db)return;
@@ -26,7 +30,7 @@ function render(){
       // With a role chosen, the name has to be on a credit in that role.
       const hit=role
         ?credits.some(c=>match(norm(nameText(c)),q))
-        :match(norm([ah,t.title_en,t.title_he,t.text_source,t.composition_attribution_printed,...credits.map(c=>nameText(c)+' '+(c.segment||''))].filter(Boolean).join(' ')),q);
+        :match(norm([ah,t.title_en,t.title_he,t.title_printed,t.title,t.text_source,t.composition_attribution_printed,...credits.map(c=>nameText(c)+' '+(c.segment||''))].filter(Boolean).join(' ')),q);
       if(hit)songs.push({a,t,credits});
     }
     const ac=a.album_credits||[];
@@ -50,16 +54,16 @@ function render(){
 function songCard({a,t,credits}){
   const artist=a.artist_printed||(a.review_status==='reviewed'?'Artist not printed':a.artist_folder);
   const num=(t.tape?esc(t.tape)+' · ':'')+(t.side?esc(t.side)+' · ':'')+(t.number!=null?esc(t.number)+'. ':'');
-  const credit=c=>`<div class="credit"><span>${esc(c.role)}${c.role_printed?`<small class="bidi"> · ${esc(c.role_printed)}</small>`:''}${c.note?`<small> · ${esc(c.note)}</small>`:''}${c.segment?`<small class="bidi"> · ${esc(c.segment)}</small>`:''}${c.credit_basis?`<small> · ${esc(c.credit_basis)} · PDF page ${esc(c.source.page)}</small>`:''}${c.album_wide_source?`<small> · Also album-wide · PDF page ${esc(c.album_wide_source.page)}</small>`:''}${c.overlap_notice?`<small> · ${esc(c.overlap_notice)}</small>`:''}</span><span class="bidi">${esc(c.name_printed)}${c.source&&c.source.page!==t.source_page?`<small> · PDF page ${esc(c.source.page)}</small>`:''}</span></div>`;
+  const credit=c=>`<div class="credit"><span>${esc(c.role)}${c.role_printed?`<small class="bidi"> · ${esc(c.role_printed)}</small>`:''}${c.note?`<small> · ${esc(c.note)}</small>`:''}${c.segment?`<small class="bidi"> · ${esc(c.segment)}</small>`:''}${c.credit_basis?`<small> · ${esc(c.credit_basis)} · PDF page ${esc(c.source.page)}</small>`:''}${c.album_wide_source?`<small> · Also album-wide · PDF page ${esc(c.album_wide_source.page)}</small>`:''}${c.overlap_notice?`<small> · ${esc(c.overlap_notice)}</small>`:''}</span><span class="bidi">${esc(c.name_printed)}${c.source&&c.source.page!==songPage(t)?`<small> · PDF page ${esc(c.source.page)}</small>`:''}</span></div>`;
   return `<article><span class="badge reviewed">Reviewed song credits</span>`
     +`<p class="muted bidi">${esc(artist)} · ${esc(albumTitle(a))}${a.edition_label?' · '+esc(a.edition_label):''}</p>`
-    +`<h2 class="bidi">${num}${esc(t.title_en||t.title_he)}</h2>`
+    +`<h2 class="bidi">${num}${esc(songTitle(t))}</h2>`
     +(t.title_en&&t.title_he?`<p class="bidi">${esc(t.title_he)}</p>`:'')
     +(credits.length?credits.map(credit).join(''):'<p class="muted">No confirmed per-song person credits entered. See the booklet and album-wide credits.</p>')
-    +`<p>${bookletLink(a,t.source_page)}</p>`
+    +`<p>${bookletLink(a,songPage(t))}</p>`
     +(t.text_source?`<p class="muted bidi">Text source: ${esc(t.text_source)}</p>`:'')
     +(t.composition_attribution_printed?`<p class="muted bidi">Composition attribution: ${esc(t.composition_attribution_printed)}</p>`:'')
-    +(t.notes?`<p class="muted">${esc(typeof t.notes==='string'?t.notes:t.notes.join(' '))}</p>`:'')
+    +(songNotes(t)?`<p class="muted">${esc(typeof songNotes(t)==='string'?songNotes(t):songNotes(t).join(' '))}</p>`:'')
     +`</article>`;
 }
 
