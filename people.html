@@ -1,1 +1,114 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Index · Jewish Music Booklet Archive</title><link rel="stylesheet" href="shared.css"><style>details{margin:0}summary{min-height:0;cursor:auto}.controls{display:grid;grid-template-columns:1fr 220px;gap:10px;margin:22px 0 12px}.platforms{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px;align-items:center}.platforms .lbl{color:var(--muted);font-size:14px}.pill{border:1px solid var(--border);border-radius:999px;padding:6px 14px;min-height:38px;background:var(--surface);color:var(--muted);font:14px/1.4 sans-serif}.pill.on{border-color:var(--gold);color:var(--gold)}#alphabet{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;margin-top:14px}#alphabet button{min-width:44px;min-height:44px;padding:6px}#count{margin:14px 0 4px;font:14px/1.6 sans-serif;color:var(--muted)}#names{columns:4 240px;column-gap:28px;margin-top:6px}.person{break-inside:avoid;padding:3px 0;border-bottom:1px dotted #232333}.person .nm{text-decoration:none;unicode-bidi:plaintext}.person .nm:hover{text-decoration:underline}.person .lk{float:right;display:flex;gap:6px;margin-left:8px}.person .lk a{font:11px/1 sans-serif;text-decoration:none;border:1px solid var(--border);border-radius:4px;padding:3px 5px;color:var(--muted);white-space:nowrap}.person .lk a:hover{color:var(--gold);border-color:var(--gold)}@media(max-width:900px){#names{columns:3 200px}}@media(max-width:650px){header,main{padding:20px}h1{font-size:27px}.controls{grid-template-columns:1fr}#names{columns:1}.platforms{gap:6px}}</style><div id="site-header"></div><main><script src="shared.js"></script><h2>Index</h2><p class="muted">Every name from reviewed credits, as printed. Click a name to search its song credits.</p><div class="note">Hebrew and English spellings stay as printed and are linked only where a booklet confirms the match. Similar surnames and uncertain identities remain separate. The find-on links search each platform for the printed name; they do not assert the platform carries that person.</div><div class="controls"><input id="filter" type="search" placeholder="Find a name in either language" aria-label="Find a name"><select id="order" aria-label="Name order"><option value="fl">First Last</option><option value="lf">Last, First</option></select></div><div class="platforms" id="platforms"><span class="lbl">Find on:</span></div><div id="alphabet"></div><p id="error" role="alert"></p><p id="count" aria-live="polite"></p><div id="names"></div><button id="more" hidden>Show more names</button></main><script>(async()=>{const PLATFORMS=[{id:"spotify",label:"Spotify",url:q=>"https://open.spotify.com/search/"+q,short:"Sp"},{id:"24six",label:"24six",url:q=>"https://www.google.com/search?q=site%3A24six.app+"+q,short:"24"},{id:"youtube",label:"YouTube",url:q=>"https://www.youtube.com/results?search_query="+q,short:"YT"},{id:"apple",label:"Apple Music",url:q=>"https://music.apple.com/us/search?term="+q,short:"AM"}];const on=new Set(PLATFORMS.map(p=>p.id));let entries,letter='',limit=600;function displayName(n,order){if(order==='fl')return n;if(/[\/;,(]/.test(n))return n;const parts=n.split(/\s+/).filter(Boolean);if(parts.length<2)return n;return parts[parts.length-1]+', '+parts.slice(0,-1).join(' ')}function sortKey(n,order){const d=displayName(n,order);const heb=/[א-ת]/.test(d);return (heb?'2':'1')+norm(d)}function render(){const order=$('order').value,q=norm($('filter').value);const rows=entries.filter(e=>(!letter||sortKey(e.name,order).slice(1).startsWith(norm(letter)))&&q.split(' ').every(v=>norm(e.variants.join(' ')+' '+e.name).includes(v)));$('count').textContent=rows.length+' names';$('names').innerHTML=rows.slice(0,limit).map(e=>{const qe=encodeURIComponent(e.name);return `<div class="person"><span class="lk">${PLATFORMS.filter(p=>on.has(p.id)).map(p=>`<a target="_blank" rel="noopener" title="${p.label}" href="${p.url(qe)}">${p.short}</a>`).join('')}</span><a class="nm" href="rebuild.html?q=${qe}">${esc(displayName(e.name,order))}</a></div>`}).join('');$('more').hidden=rows.length<=limit}function reset(){limit=600;entries.forEach(e=>e._k=sortKey(e.name,$('order').value));entries.sort((a,b)=>a._k.localeCompare(b._k));render()}$('filter').oninput=render;$('order').onchange=()=>{letter='';reset()};$('more').onclick=()=>{limit+=600;render()};const platBox=$('platforms');PLATFORMS.forEach(p=>{const b=document.createElement('button');b.type='button';b.className='pill on';b.textContent=p.label;b.onclick=()=>{if(on.has(p.id)){on.delete(p.id);b.classList.remove('on')}else{on.add(p.id);b.classList.add('on')}render()};platBox.appendChild(b)});$('alphabet').innerHTML=['All',...'ABCDEFGHIJKLMNOPQRSTUVWXYZ',...'אבגדהוזחטיכלמנסעפצקרשת'].map(l=>`<button type="button" data-letter="${l==='All'?'':l}">${l}</button>`).join('');$('alphabet').onclick=e=>{if(e.target.dataset.letter!==undefined){letter=e.target.dataset.letter;render()}};try{entries=(await loadDB()).identity_index;reset()}catch(e){$('error').textContent='Index could not load. Please refresh.'}})();</script></html>
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Index · Jewish Music Booklet Archive</title><link rel="stylesheet" href="shared.css"><style>details{margin:0}summary{min-height:0;cursor:auto}.controls{display:grid;grid-template-columns:1fr 220px;gap:10px;margin:22px 0 12px}.platforms{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px;align-items:center}.platforms .lbl{color:var(--muted);font-size:14px}.pill{border:1px solid var(--border);border-radius:999px;padding:6px 14px;min-height:38px;background:var(--surface);color:var(--muted);font:14px/1.4 sans-serif}.pill.on{border-color:var(--gold);color:var(--gold)}#alphabet{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;margin-top:14px}#alphabet button{min-width:44px;min-height:44px;padding:6px}#count{margin:14px 0 4px;font:14px/1.6 sans-serif;color:var(--muted)}#names{columns:4 240px;column-gap:28px;margin-top:6px}.person{break-inside:avoid;padding:3px 0;border-bottom:1px dotted #232333}.person .nm{text-decoration:none;unicode-bidi:plaintext}.person .nm:hover{text-decoration:underline}.person .lk{float:right;display:flex;gap:6px;margin-left:8px}.person .lk a{font:11px/1 sans-serif;text-decoration:none;border:1px solid var(--border);border-radius:4px;padding:3px 5px;color:var(--muted);white-space:nowrap}.person .lk a:hover{color:var(--gold);border-color:var(--gold)}@media(max-width:900px){#names{columns:3 200px}}@media(max-width:650px){header,main{padding:20px}h1{font-size:27px}.controls{grid-template-columns:1fr}#names{columns:1}.platforms{gap:6px}}</style><div id="site-header"></div><main><script src="shared.js"></script><h2>Index</h2><p class="muted">Names with musical credits, as printed. Click a name to search its song credits.</p><div class="note">Hebrew and English spellings stay as printed and are linked only where a booklet confirms the match. Similar surnames and uncertain identities remain separate. The find-on links search each platform for the printed name; they do not assert the platform carries that person.</div><div class="controls"><input id="filter" type="search" placeholder="Find a name in either language" aria-label="Find a name"><select id="order" aria-label="Name order"><option value="fl">First Last</option><option value="lf">Last, First</option></select></div><div class="platforms" id="platforms"><span class="lbl">Find on:</span></div><div id="alphabet"></div><p id="error" role="alert"></p><p id="count" aria-live="polite"></p><div id="names"></div><button id="more" hidden>Show more names</button></main><script>const PREPASS={
+'yiddish nachas kids':['choir',1],'פרחי קעמפ שלוה':['choir',1],
+'originally recorded by':['hidden',0],'original_performance':['hidden',0],'original_recording':['hidden',0],
+'first performer (ביצוע ראשון)':['hidden',0],'original performer (prose)':['hidden',0],
+'traditional (עממי)':['hidden',0],'traditional (ניגון עתיק)':['hidden',0],
+'court / tradition (printed: חצר הקודש פינסק קארלין)':['hidden',0],'melody source':['hidden',0],
+'melody owner (בעל מנגון)':['hidden',0],'brought by (הובא ע"י)':['hidden',0],
+'adapter / presenter (הובא ושודר ע"י)':['hidden',0],'inspired by':['hidden',0],'inspired_by':['hidden',0],
+'presenter':['hidden',0],'presented by':['hidden',0],'presents':['hidden',0],
+'מגיש (presenter)':['hidden',0],'מציגים (presented by)':['hidden',0],'מציגים (presented by - logo)':['hidden',0],
+'presenter (מציג)':['hidden',0],'מוגש ע"י (presented by)':['hidden',0],'מגישה (presented by)':['hidden',0],
+'sponsor':['hidden',0],'חסות (sponsored by)':['hidden',0],'promotion':['hidden',0],'series_line':['hidden',0],
+'pr':['hidden',0],'record_company':['hidden',0],'legal_counsel':['hidden',0],
+'academic_committee_member':['hidden',0],'academic_committee_chair':['hidden',0],
+'cinematographer':['hidden',0],'props_and_scenery':['hidden',0],'lighting':['hidden',0],'safrus':['hidden',0],
+'concept':['hidden',0],'song concept':['hidden',0],'idea and concept':['hidden',0],
+'recorded_at':['hidden',0],'recorded':['hidden',0],'master':['hidden',0],'engeneers':['hidden',0],
+'עזרה בהקלטות':['hidden',0],'music_preparation':['hidden',0],
+'coordinator':['hidden',0],'sessions_coordination_israel':['hidden',0],'executive_administrator':['hidden',0],
+'song_selection_assistance':['hidden',0],'עזרה מוזיקלית לאורך כל העבודה':['hidden',0],
+'musical supervisor':['hidden',1],'directed & scriptwriting by':['hidden',1],
+'performances by':['soloist',1],'musical performance':['musicians',1],
+'kumzitz with':['soloist',1],'adult_feature':['soloist',1],'special_harmonies':['choir',1],
+'group':['choir',1],
+'programmed by':['musicians',0],'fender_rhodes':['musicians',0],'pads':['musicians',1],
+'effects':['musicians',1],'computer':['musicians',1],'cuatro':['musicians',0],
+'mellophone':['musicians',0],'accoustic pathos':['musicians',1],
+'script_and_songs_writer':['lyricist,composer',1],'lyric_assistance':['lyricist',1],
+'ozreini keil chai poem penned by':['lyricist',0],'by (מאת)':['composer',1],
+'מוזיקה (music)':['composer',0],'background music':['composer',1],'background_music':['composer',1],
+'direction':['conductor',1],
+'עריכה':['hidden',0],'travel':['hidden',0],'digital_edits':['hidden',0],
+'israeli_pr':['hidden',0],'shatkins':['hidden',1],
+'help_with_text':['lyricist',1],'nikkud':['hidden',0],
+};
+function roleGroups(role){
+  const s=String(role||'').trim(), ls=s.toLowerCase();
+  if(PREPASS[ls]){const v=PREPASS[ls];return [new Set(v[0].split(',')),!!v[1]]}
+  const g=new Set(); let unsure=false;
+  const has=(...subs)=>subs.some(x=>ls.includes(x));
+  if(has('attribut','heard from','tradition','traditional','originally recorded','original performer','original_performance','original_recording','first performer','inspired by','tune source','lyrics source','text source','source citation','part ii lyrics','melody owner','בעל מנגון','brought by','הובא ע','lyrics (essay','lyrics (source','sources','מקורות','nigun')&&!has('composer')&&!has('composed'))
+    return [new Set(['hidden']),!(ls.includes('nigun')||ls.includes('source')||ls.includes('attribut'))];
+  if(has('composer attribution','composition attribution','melody attribution'))return[new Set(['hidden']),false];
+  if(has('unspecified','unlabeled','unlabelled','roster printed without header','role not stated','role not labeled')||ls==='credits'||ls==='other'||ls==='addition')
+    return[new Set(['hidden']),false];
+  if(has('engineer','mix','mastering','mastered','recorded','recording','studio','recordin','remaster','digitally mastered','sound','live_sound','playback','rerecord','re-engineered','remote recording','overdubs','הוקלט','אולפן','טכנאי','מאסטרינג','technician','technical','on_site')&&ls!=='recorder')
+    return[new Set(['hidden']),false];
+  if(has('engineer','mixing','mixer','mix_','mixed by','mastering','mastered','technician','technical','studio'))
+    return[new Set(['hidden']),false];
+  if(has('design','graphic','cover','jacket','booklet','artwork','art ','art,','logo','illustrat','painting','photo','image','layout','typesetting','typing','print','pressing','duplication','replication','manufactur','poster','makeup','עיצוב','גרפי','עטיפה','צילום','דואט')&&!has('duet','דואט (duet')){
+    if(!(ls.includes('duet')||ls.includes('דואט')))return[new Set(['hidden']),false];
+  }
+  if(has('duet','דואט'))g.add('soloist');
+  if(has('distribut','הפצה','label','copyright','rights_holder','®','©','publisher','מו"ל','מבית הוצאת','marketing','pr ','pr/','pr_','יח"צ','public_relations','social_media','booking','management','manager','administration','vice chairman','executive advisor','a&r','consultant','advisor','adviser','organization','project_manager','project steering','צוות היגוי','source research','ראיון ומקורות','contact','credits page','acknowledgment','dedication','support, coffee','extended family','artist signature','stage manager','travel_arrangements','online_distribution','physical_distribution','pressing','דל','ניהול'))
+    return[new Set(['hidden']),false];
+  if(has('translat','language_editor','עריכה לשונית','עריכת תוכן','content_editor','writing and editing','texts editing','editor','editing','song_editing','vocal_editing','vocal_editor','digital_editing','video','filmed','clip_credit','liner','essay','song descriptions','back cover','cover back','narrat','קריינות','voice over','speaker','spoken intro','master_of_ceremonies','typing'))
+    return[new Set(['hidden']),false];
+  if(has('copyist','notation','score'))return[new Set(['hidden']),false];
+  if(has('composer','composed','composers_album_line','composer_album','opening_composer','music_by','music by','melody adapted','additional music','additional_music','theme by','theme (נושא)','song & theme','musical by','מוזיקאליש דורך','לחנים','written by','געשריבן ביי','songwriter','music (essay','music (printed')){
+    g.add('composer'); if(has('written by','songwriter'))unsure=true;
+  }
+  if(ls==='music')g.add('composer');
+  if(has('lyricist','text author','texts by','texts written','words','lyrics','author')){
+    if(!has('source','essay','citation')){
+      g.add('lyricist');
+      if(has('translat')||ls==='author'||ls.includes('texts written & translations')||ls.includes('texts written and translated'))unsure=true;
+    }
+  }
+  if(has('arrang','עיבוד','orchestrat','adaptation','adapted','vocal_arrangements'))g.add('arranger');
+  if(has('conductor','conducted','ניצוח','מנצח','directed by','led_by','vocal_conductor','director')&&!has('music_video_director','creator_director','technical_director','art director','producer_director','produced_directed_by','project'))g.add('conductor');
+  if(has('producer_director','produced_directed_by','creator_director')){g.add('producer');g.add('conductor');unsure=true}
+  if(has('director')&&!g.size&&!has('music_video','art director')){g.add('conductor');unsure=true}
+  if(has('musical_director','music_director')){g.add('conductor');unsure=true}
+  if(has('producer','production','הפקה','מפיק','executive producer','co_producer','associate_producer','writer_producer','musical producer','compiler','לקט מוזיקאליש','musical selection')){
+    g.add('producer');
+    if(has('writer_producer','technical_production','production_manager','production_company','production assistance','production coordinator','production_assistance','compiler','לקט'))unsure=true;
+  }
+  if(has('choir','chorus','מקהל','background vocals','background_vocals','backup_vocals','bg_vocals','group_harmonies','harmony'))g.add('choir');
+  if(has('vocal_group','group_vocal','adult_vocal_group','ensemble','quartet','trio','zemiros group','chaverim','participant','משתתפים','group roster','group_member','group)','(the group)','cast_member')){g.add('choir');unsure=true}
+  if(has('child participant','ולילדי החמד')){g.add('choir');unsure=true}
+  if(has('drums','drum','bass','guitar','גיטר','keyboard','קליד','piano','פסנתר','violin','כינור','trumpet','חצוצר','percussion','כלי הקשה','sax','סקסופון','trombone','טרומבון','string','flute','חליל','clarinet','קלרינט','קלארינעט','cello','viola','brass','חצוצרות','בראס','woodwind','כלי נשיפה','horn','קרנות','synthesizer','סינטי','synth','programming','תכנות','instrument','orchestra','תזמורת','musician','music played','accompaniment','ליווי','accompanied','performance (ביצוע','harmonica','oud','saz','baglama','darbuka','mandolin','accordion','banjo','harp','organ','tuba','xylophone','recorder','melodica','zurna','kamantcha','kamancheh','tar','santur','bagpipes','irish_drums','bouzouki','oboe','fiddle','flugelhorn','piccolo','english horn','midi','samplers','looping','harmonizer','mx150','keys','בס','תופים','גיטרות','כינורות','טרומבונים','עוד','נאי','טאר','wind','rhythm','overdub','vocal drums','sequencing','concert master','concertmaster','acoustic pathos'))g.add('musicians');
+  if(has('soloist','סולן','סאלא','סולו','vocalist','singer','vocals','vocal','שירה','געזונגען','זמר','ומזמר','משוררים','שר (','lead','featuring','featured','באירוח','guest','אורח','duet','דואט','child','ילד','אינגל','boy','solo','performer','performed by','ביצוע','בביצוע','מבצע','sung by','אמנים','artist','chazan','cantor','chazonus','special appearance','special cameo','ילדי הפלא','ילד הפלא','compiler_vocals','choir_member','opening / intro','intro','speaker')){
+    g.add('soloist');
+    if(has('artist','speaker','opening','intro','cast','performer named','program line','parenthetical','attribution line','compiler_vocals'))unsure=true;
+  }
+  if(/\bsolo\b/.test(ls))g.add('soloist');
+  g.delete('hidden');
+  if(!g.size)return[new Set(['hidden']),true];
+  return[g,unsure];
+}
+(async()=>{const PLATFORMS=[{id:"spotify",label:"Spotify",url:q=>"https://open.spotify.com/search/"+q,short:"Sp"},{id:"24six",label:"24six",url:q=>"https://www.google.com/search?q=site%3A24six.app+"+q,short:"24"},{id:"youtube",label:"YouTube",url:q=>"https://www.youtube.com/results?search_query="+q,short:"YT"},{id:"apple",label:"Apple Music",url:q=>"https://music.apple.com/us/search?term="+q,short:"AM"}];const on=new Set(PLATFORMS.map(p=>p.id));let entries,letter='',limit=600;function displayName(n,order){if(order==='fl')return n;if(/[\/;,(]/.test(n))return n;const parts=n.split(/\s+/).filter(Boolean);if(parts.length<2)return n;return parts[parts.length-1]+', '+parts.slice(0,-1).join(' ')}function sortKey(n,order){const d=displayName(n,order);const heb=/[א-ת]/.test(d);return (heb?'2':'1')+norm(d)}function render(){const order=$('order').value,q=norm($('filter').value);const rows=entries.filter(e=>shown(e)&&(!letter||sortKey(e.name,order).slice(1).startsWith(norm(letter)))&&q.split(' ').every(v=>norm(e.variants.join(' ')+' '+e.name).includes(v)));$('count').textContent=rows.length+' names';$('names').innerHTML=rows.slice(0,limit).map(e=>{const qe=encodeURIComponent(e.name);return `<div class="person"><span class="lk">${PLATFORMS.filter(p=>on.has(p.id)).map(p=>`<a target="_blank" rel="noopener" title="${p.label}" href="${p.url(qe)}">${p.short}</a>`).join('')}</span><a class="nm" href="rebuild.html?q=${qe}">${esc(displayName(e.name,order))}</a></div>`}).join('');$('more').hidden=rows.length<=limit}function reset(){limit=600;entries.forEach(e=>e._k=sortKey(e.name,$('order').value));entries.sort((a,b)=>a._k.localeCompare(b._k));render()}$('filter').oninput=render;$('order').onchange=()=>{letter='';reset()};$('more').onclick=()=>{limit+=600;render()};const platBox=$('platforms');PLATFORMS.forEach(p=>{const b=document.createElement('button');b.type='button';b.className='pill on';b.textContent=p.label;b.onclick=()=>{if(on.has(p.id)){on.delete(p.id);b.classList.remove('on')}else{on.add(p.id);b.classList.add('on')}render()};platBox.appendChild(b)});const musT=document.createElement('button');musT.type='button';musT.className='pill';musT.textContent='Show musicians';musT.onclick=()=>{showMusicians=!showMusicians;musT.classList.toggle('on',showMusicians);render()};platBox.appendChild(musT);$('alphabet').innerHTML=['All',...'ABCDEFGHIJKLMNOPQRSTUVWXYZ',...'אבגדהוזחטיכלמנסעפצקרשת'].map(l=>`<button type="button" data-letter="${l==='All'?'':l}">${l}</button>`).join('');$('alphabet').onclick=e=>{if(e.target.dataset.letter!==undefined){letter=e.target.dataset.letter;render()}};const BASE_SHOWN=['artist','composer','lyricist','arranger','choir','soloist','producer','conductor'];
+let showMusicians=false;
+const SPLIT_BAD=/\d|studio|design|productions|records|ltd|inc|choir|orchestra|band|group|ensemble/i;
+function splitNames(name){name=String(name||'');if(!name.includes(','))return[name];const parts=name.split(',').map(x=>x.trim()).filter(Boolean);if(parts.length<2)return[name];const multi=parts.filter(p=>p.split(/\s+/).length>=2).length;const ok=parts.every(p=>{const w=p.split(/\s+/).filter(Boolean);return w.length>=1&&w.length<=5&&/[\p{L}]/u.test(p)&&!SPLIT_BAD.test(p)});return ok&&multi>=2?parts:[name]}
+function buildView(db){
+const src=db.identity_index;
+const byNorm=new Map();
+src.forEach((e,i)=>{[e.name,...(e.variants||[])].forEach(v=>{const k=norm(v);if(!byNorm.has(k))byNorm.set(k,i)})});
+const eg=src.map(()=>new Set());
+const add=(nm,role)=>{const [gs]=roleGroups(role);if(gs.has('hidden'))return;const self=byNorm.get(norm(nm));if(self!=null)gs.forEach(g=>eg[self].add(g));for(const p of splitNames(nm)){const i=byNorm.get(norm(p));if(i!=null)gs.forEach(g=>eg[i].add(g))}};
+const extraArtists=[];
+for(const a of db.albums){
+const ap=(a.artist_printed||'').trim();
+if(ap){const i=byNorm.get(norm(ap));if(i!=null)eg[i].add('artist');else extraArtists.push(ap)}
+for(const t of a.tracks)for(const c of t.credits)add(c.name_printed,c.role);
+for(const c of a.album_credits||[])add(c.name_printed,c.role);
+}
+const view=[],seen=new Map();
+const pushRow=(name,variants,gs)=>{const k=norm(name);const ex=seen.get(k);if(ex){gs.forEach(g=>ex.groups.add(g));return}const row={name,variants,groups:new Set(gs)};seen.set(k,row);view.push(row)};
+src.forEach((e,i)=>{for(const p of splitNames(e.name))pushRow(p,[e.name,...(e.variants||[])],eg[i])});
+for(const ap of extraArtists)pushRow(ap,[ap],['artist']);
+return view}
+function shown(e){const g=e.groups;if(BASE_SHOWN.some(x=>g.has(x)))return true;return showMusicians&&g.has('musicians')}
+try{entries=buildView(await loadDB());reset()}catch(e){$('error').textContent='Index could not load. Please refresh.'}})();</script></html>
