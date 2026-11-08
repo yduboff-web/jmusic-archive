@@ -2,6 +2,7 @@
 // (hundreds of variants); roleGroups() sorts each label into the groups below.
 // Groups: artist, composer, lyricist, arranger, choir, soloist, producer, conductor, musicians, hidden.
 const PREPASS={
+'choir_member':['choir',0],'choir_members':['choir',0],'children_choir_member':['choir',0],
 'backing_vocals':['choir',0],'vocal_producer':['producer',0],
 'yiddish nachas kids':['choir',1],'פרחי קעמפ שלוה':['choir',1],
 'vocal edit':['hidden',0],'vocal_coach':['hidden',0],'organizer':['hidden',0],'post_production':['hidden',0],
